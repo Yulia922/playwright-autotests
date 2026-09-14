@@ -11,20 +11,21 @@ test('Add and delete pet type', async ({ page }) => {
   await page.getByRole('button', { name: 'Add' }).click();
 
   await expect(page.getByRole('heading', { name: 'New Pet Type' })).toBeVisible();
-  await expect(page.locator('label')).toBeVisible();
+  await expect(page.locator('label')).toHaveText('Name');
   await expect(page.locator('#name')).toBeVisible();
 
   await page.locator('#name').fill('pig');
   await page.getByRole('button', { name: 'Save' }).click();
 
-  await expect(page.locator('[id="6"]')).toHaveValue('pig');
+  await expect(page.locator('[name="pettype_name"]').last()).toHaveValue('pig');
 
-  await page.on('dialog', (dialog) => {
+  page.on('dialog', (dialog) => {
     expect(dialog.message()).toEqual('Delete the pet type?');
     dialog.accept();
   });
-  const petRow = page.locator('tbody tr');
-  await petRow.last().getByRole('button', { name: 'Delete', exact: true }).click();
+  const lastPetRow = page.locator('tbody tr').last();
+  await lastPetRow.last().getByRole('button', { name: 'Delete' }).click();
 
-  await expect(petRow.last().getByRole('textbox')).not.toHaveValue('pig');
+  await page.waitForResponse('**/pettypes/*');
+  await expect(lastPetRow.getByRole('textbox')).not.toHaveValue('pig');
 });
