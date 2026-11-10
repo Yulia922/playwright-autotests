@@ -11,8 +11,10 @@ test('Select the desired date in the calendar', async ({ page }) => {
   await page.getByRole('link', { name: 'Harold Davis' }).click();
 
   await page.getByRole('button', { name: 'Add New Pet' }).click();
+  const nameFieldIcon = page.locator('.form-group', { has: page.locator('#name') }).locator('.form-control-feedback');
+  await expect(nameFieldIcon).toHaveClass(/glyphicon-remove/);
   await page.getByRole('textbox', { name: 'Name' }).fill('Tom');
-  await expect(page.locator('.form-group', { has: page.locator('#name') }).locator('.glyphicon-ok')).toBeVisible();
+  await expect(nameFieldIcon).toHaveClass(/glyphicon-ok/);
 
   await page.getByRole('button', { name: 'Open calendar' }).click();
   await page.getByRole('button', { name: 'Choose month and year' }).click();
@@ -26,10 +28,10 @@ test('Select the desired date in the calendar', async ({ page }) => {
   await page.getByLabel('Type').selectOption('dog');
   await page.getByRole('button', { name: 'Save Pet' }).click();
 
-  const tomPetSection = page.locator('app-pet-list').filter({ has: page.getByRole('cell', { name: 'Tom' }) });
-  await expect(tomPetSection.getByRole('cell', { name: 'Tom' })).toBeVisible();
-  await expect(tomPetSection.getByRole('cell', { name: '2014-05-02' })).toBeVisible();
-  await expect(tomPetSection.getByRole('cell', { name: 'dog' })).toBeVisible();
+  const tomPetSection = page.locator('app-pet-list', { hasText: 'Tom' });
+  await expect(tomPetSection.locator('dt:has-text("Name") + dd')).toHaveText('Tom');
+  await expect(tomPetSection.locator('dt:has-text("Birth Date") + dd')).toHaveText('2014-05-02');
+  await expect(tomPetSection.locator('dt:has-text("Type") + dd')).toHaveText('dog');
 
   await tomPetSection.getByRole('button', { name: 'Delete Pet' }).click();
   await expect(tomPetSection).toHaveCount(0);
@@ -47,17 +49,15 @@ test('Select the dates of visits and validate dates order.', async ({ page }) =>
   await expect(petTable.locator('td').first()).toHaveText('Samantha');
   await expect(petTable.locator('td').last()).toHaveText('Jean Coleman');
 
-  const openCalendarButton = page.getByRole('button', { name: 'Open calendar' });
-  const calendarDate = page.locator('input[name="date"]');
-  await openCalendarButton.click();
+  await page.getByRole('button', { name: 'Open calendar' }).click();
   const today = new Date();
   const year = today.getFullYear();
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  const day = today.getDate().toString().padStart(2, '0');
+  const month = today.toLocaleString('en-US', { month: '2-digit' });
+  const day = today.toLocaleString('en-US', { day: '2-digit' });
   const expectedDate = `${year}/${month}/${day}`;
 
   await page.locator('.mat-calendar-body-today').click();
-  await expect(calendarDate).toHaveValue(expectedDate);
+  await expect(page.locator('input[name="date"]')).toHaveValue(expectedDate);
 
   await page.locator('#description').fill('dermatologists visit');
   await page.getByRole('button', { name: 'Add Visit' }).click();
@@ -68,22 +68,21 @@ test('Select the dates of visits and validate dates order.', async ({ page }) =>
 
   await samanthaPetSection.getByRole('button', { name: 'Add Visit' }).click();
 
-  await openCalendarButton.click();
-  const chosenDay = new Date();
-  chosenDay.setDate(chosenDay.getDate() - 45);
-  const expectedYear = chosenDay.getFullYear();
-  const expectedMonth = (chosenDay.getMonth() + 1).toString().padStart(2, '0');
-  const expectedDay = chosenDay.getDate().toString().padStart(2, '0');
+  await page.getByRole('button', { name: 'Open calendar' }).click();
+  today.setDate(today.getDate() - 45);
+  const expectedYear = today.getFullYear();
+  const expectedMonth = (today.getMonth() + 1).toString().toLocaleString('en-US', { month: '2-digit' });
+  const expectedDay = today.getDate().toString().toLocaleString('en-US', { day: '2-digit' });
   const expectedDatePrevious = `${expectedYear}/${expectedMonth}/${expectedDay}`;
   const expectedMonthAndYear = `${expectedMonth} ${expectedYear}`;
 
-  let currentMonthAndYear = await page.locator('.mat-calendar-period-button').textContent();
+  let currentMonthAndYear = await page.getByRole('button', { name: 'Choose month and year' }).textContent();
 
   while (!currentMonthAndYear?.includes(expectedMonthAndYear)) {
     await page.getByRole('button', { name: 'Previous month' }).click();
-    currentMonthAndYear = await page.locator('.mat-calendar-period-button').textContent();
+    currentMonthAndYear = await page.getByRole('button', { name: 'Choose month and year' }).textContent();
   }
-  await page.locator('.mat-calendar-body-cell-content').getByText(chosenDay.getDate().toString()).click();
+  await page.getByText(today.getDate().toString(), { exact: true }).click();
 
   await page.locator('#description').fill('massage therapy');
   await page.getByRole('button', { name: 'Add Visit' }).click();
@@ -95,8 +94,12 @@ test('Select the dates of visits and validate dates order.', async ({ page }) =>
   const previousVisitDate = new Date(previousVisitDateText.trim());
   expect(lastVisitDate > previousVisitDate).toBeTruthy();
 
-  await samanthaPetSection.getByRole('button', { name: 'Delete Visit' }).first().click();
-  await samanthaPetSection.getByRole('button', { name: 'Delete Visit' }).nth(1).click();
+  const samanthaVisitRows = samanthaPetSection.locator('app-visit-list tr');
+  await samanthaVisitRows
+    .filter({ hasText: 'dermatologists visit' })
+    .getByRole('button', { name: 'Delete Visit' })
+    .click();
+  await samanthaVisitRows.filter({ hasText: 'massage therapy' }).getByRole('button', { name: 'Delete Visit' }).click();
 
   const visits = samanthaPetSection.locator('app-visit-list');
   await expect(visits.getByRole('cell', { name: 'dermatologists visit' })).toHaveCount(0);
