@@ -1,0 +1,160 @@
+[
+  {
+    "firstName": "Tim",
+    "lastName": "Kop",
+    "address": "110 W. Liberty St.",
+    "city": "New York",
+    "telephone": "585404949",
+    "id": 2727,
+    "pets": [
+      {
+        "name": "Cake",
+        "birthDate": "2000-09-07",
+        "type": {
+          "name": "cat",
+          "id": 3401
+        },
+        "id": 5145,
+        "ownerId": 2727,
+        "visits": [
+          {
+            "date": "2025-01-10",
+            "description": "annual checkup",
+            "id": 7001,
+            "petId": 5145
+          },
+          {
+            "date": "2025-02-14",
+            "description": "rabies vaccination",
+            "id": 7002,
+            "petId": 5145
+          },
+          {
+            "date": "2025-03-20",
+            "description": "dental cleaning",
+            "id": 7003,
+            "petId": 5145
+          },
+          {
+            "date": "2025-04-08",
+            "description": "ear examination",
+            "id": 7004,
+            "petId": 5145
+          },
+          {
+            "date": "2025-05-16",
+            "description": "flea treatment",
+            "id": 7005,
+            "petId": 5145
+          },
+          {
+            "date": "2025-06-12",
+            "description": "blood test",
+            "id": 7006,
+            "petId": 5145
+          },
+          {
+            "date": "2025-07-19",
+            "description": "weight check",
+            "id": 7007,
+            "petId": 5145
+          },
+          {
+            "date": "2025-08-22",
+            "description": "skin examination",
+            "id": 7008,
+            "petId": 5145
+          },
+          {
+            "date": "2025-09-15",
+            "description": "deworming",
+            "id": 7009,
+            "petId": 5145
+          },
+          {
+            "date": "2025-10-24",
+            "description": "follow-up examination",
+            "id": 7010,
+            "petId": 5145
+          }
+        ]
+      },
+      {
+        "name": "Moonpie",
+        "birthDate": "2008-10-11",
+        "type": {
+          "name": "dog",
+          "id": 3402
+        },
+        "id": 5146,
+        "ownerId": 2727,
+        "visits": []
+      }
+    ]
+  },
+  {
+    "firstName": "Betty",
+    "lastName": "Davis",
+    "address": "638 Cardinal Ave.",
+    "city": "San Diego",
+    "telephone": "666666666",
+    "id": 2728,
+    "pets": [
+      {
+        "name": "Basil",
+        "birthDate": "2002-08-06",
+        "type": {
+          "name": "hamster",
+          "id": 3406
+        },
+        "id": 5147,
+        "ownerId": 2728,
+        "visits": []
+      },
+      {
+        "name": "Rose",
+        "birthDate": "2000-12-06",
+        "type": {
+          "name": "cat",
+          "id": 3407
+        },
+        "id": 5148,
+        "ownerId": 2728,
+        "visits": []
+      },
+      {
+        "name": "Lile",
+        "birthDate": "2003-11-05",
+        "type": {
+          "name": "hamster",
+          "id": 3408
+        },
+        "id": 5149,
+        "ownerId": 2728,
+        "visits": []
+      },
+      {
+        "name": "Ibragim",
+        "birthDate": "2005-09-01",
+        "type": {
+          "name": "hamster",
+          "id": 3409
+        },
+        "id": 5150,
+        "ownerId": 2728,
+        "visits": []
+      },
+      {
+        "name": "Emile",
+        "birthDate": "2020-08-06",
+        "type": {
+          "name": "cat",
+          "id": 3410
+        },
+        "id": 5151,
+        "ownerId": 2728,
+        "visits": []
+      }
+    ]
+  }
+]
