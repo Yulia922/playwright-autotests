@@ -13,25 +13,25 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('mocking API request', async ({ page }) => {
-  const ownerRows = page.locator('#ownersTable > table > tbody > tr');
+  const ownerRows = page.locator('.ownerFullName');
   await expect(ownerRows).toHaveCount(2);
-  const owner = owners[0];
-  await page.route('**/api/owners/2727', async (route) => {
+  const firstOwner = owners[0];
+  await page.route(`**/api/owners/${firstOwner.id}`, async (route) => {
     await route.fulfill({
-      json: owner,
+      json: firstOwner,
     });
   });
   await ownerRows.first().getByRole('link').click();
   const ownerInfo = page.locator('app-owner-detail table');
   await expect(ownerInfo.first().locator('td')).toHaveText([
-    `${owner.firstName} ${owner.lastName}`,
-    owner.address,
-    owner.city,
-    owner.telephone,
+    `${firstOwner.firstName} ${firstOwner.lastName}`,
+    firstOwner.address,
+    firstOwner.city,
+    firstOwner.telephone,
   ]);
   const petList = page.locator('app-pet-list');
   await expect(petList).toHaveCount(2);
-  await expect(petList.first().locator('dt:has-text("Name") + dd')).toHaveText(owner.pets[0].name);
-  await expect(petList.nth(1).locator('dt:has-text("Name") + dd')).toHaveText(owner.pets[1].name);
+  await expect(petList.first().locator('dt:has-text("Name") + dd')).toHaveText(firstOwner.pets[0].name);
+  await expect(petList.nth(1).locator('dt:has-text("Name") + dd')).toHaveText(firstOwner.pets[1].name);
   await expect(petList.first().locator('app-visit-list > table > tr')).toHaveCount(10);
 });
