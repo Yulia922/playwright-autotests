@@ -13,26 +13,26 @@ test.describe('Owner tests', () => {
     await page.getByRole('link', { name: ' Search' }).click();
   });
   test('mocking API request', async ({ page }) => {
-    const ownerRows = page.locator('#ownersTable > table > tbody > tr');
+    const ownerRows = page.locator('.ownerFullName');
     await expect(ownerRows).toHaveCount(2);
-    const owner = owners[0];
-    await page.route('**/api/owners/2727', async (route) => {
+    const firstOwner = owners[0];
+    await page.route(`**/api/owners/${firstOwner.id}`, async (route) => {
       await route.fulfill({
-        json: owner,
+        json: firstOwner,
       });
     });
     await ownerRows.first().getByRole('link').click();
     const ownerInfo = page.locator('app-owner-detail table');
     await expect(ownerInfo.first().locator('td')).toHaveText([
-      `${owner.firstName} ${owner.lastName}`,
-      owner.address,
-      owner.city,
-      owner.telephone,
+      `${firstOwner.firstName} ${firstOwner.lastName}`,
+      firstOwner.address,
+      firstOwner.city,
+      firstOwner.telephone,
     ]);
     const petList = page.locator('app-pet-list');
     await expect(petList).toHaveCount(2);
-    await expect(petList.first().locator('dt:has-text("Name") + dd')).toHaveText(owner.pets[0].name);
-    await expect(petList.nth(1).locator('dt:has-text("Name") + dd')).toHaveText(owner.pets[1].name);
+    await expect(petList.first().locator('dt:has-text("Name") + dd')).toHaveText(firstOwner.pets[0].name);
+    await expect(petList.nth(1).locator('dt:has-text("Name") + dd')).toHaveText(firstOwner.pets[1].name);
     await expect(petList.first().locator('app-visit-list > table > tr')).toHaveCount(10);
   });
 });
@@ -42,7 +42,7 @@ test.describe('Veterinarians and specialties test', () => {
     await page.route('*/**/api/vets', async (route) => {
       const vetSpecialties = await route.fetch();
       const vetSpecialtiesJSON = await vetSpecialties.json();
-      vetSpecialtiesJSON[5].specialties = [
+      vetSpecialtiesJSON.find((vet) => vet.firstName === 'Sharon' && vet.lastName === 'Jenkins')!.specialties = [
         { id: 5786, name: 'dentistry' },
         { id: 5785, name: 'surgery' },
         { id: 5784, name: 'radiology' },
@@ -64,6 +64,6 @@ test.describe('Veterinarians and specialties test', () => {
   });
 
   test('Intercept API response', async ({ page }) => {
-    await expect(page.getByRole('row', { name: 'Sharon Jenkins' }).locator('td').nth(1).locator('div')).toHaveCount(10);
+    await expect(page.getByRole('row', { name: 'Sharon Jenkins' }).locator('td div')).toHaveCount(10);
   });
 });
